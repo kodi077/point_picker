@@ -7,6 +7,7 @@ export function createInitialState(): AppState {
     imageNaturalWidth: 0,
     imageNaturalHeight: 0,
     imageObjectUrl: '',
+    imageName: '',
     points: [],
     nameUnit: 'Point',
     selectedPointId: null,
@@ -21,6 +22,7 @@ export function setImage(state: AppState, info: ImageInfo): AppState {
     imageNaturalWidth: info.naturalWidth,
     imageNaturalHeight: info.naturalHeight,
     imageObjectUrl: info.objectUrl,
+    imageName: info.fileName,
   };
 }
 

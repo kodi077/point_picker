@@ -887,6 +887,16 @@ body {
   background: rgba(99, 102, 241, 0.05);
 }
 
+.item-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--clr-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
 .item-info {
   display: flex;
   justify-content: space-between;

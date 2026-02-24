@@ -22,12 +22,7 @@ export async function signOut() {
 }
 
 export function onAuthStateChange(callback: AuthChangeCallback) {
-    // Initial check
-    supabase.auth.getUser().then(({ data: { user } }) => {
-        callback(user);
-    });
-
-    // Listener for future changes
+    // Supabase fires the listener with INITIAL_SESSION immediately upon subscription
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
         callback(session?.user ?? null);
     });

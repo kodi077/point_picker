@@ -1,20 +1,20 @@
 import { ExportHistoryItem } from './historyService';
 
 export function renderHistoryPanel(
-    container: HTMLElement,
-    history: ExportHistoryItem[],
-    onClose: () => void,
-    onReplay: (item: ExportHistoryItem) => void
+  container: HTMLElement,
+  history: ExportHistoryItem[],
+  onClose: () => void,
+  onReplay: (item: ExportHistoryItem) => void
 ): void {
-    container.innerHTML = '';
+  container.innerHTML = '';
 
-    const overlay = document.createElement('div');
-    overlay.className = 'history-overlay';
+  const overlay = document.createElement('div');
+  overlay.className = 'history-overlay';
 
-    const panel = document.createElement('div');
-    panel.className = 'history-panel';
+  const panel = document.createElement('div');
+  panel.className = 'history-panel';
 
-    panel.innerHTML = `
+  panel.innerHTML = `
     <div class="history-header">
       <h2>Export History</h2>
       <button class="close-history-btn icon-btn" aria-label="Close">
@@ -26,6 +26,9 @@ export function renderHistoryPanel(
       <ul class="history-list">
         ${history.map(item => `
           <li class="history-item">
+            <div class="item-name" title="${item.image_name || 'Untitled Image'}">
+              ${item.image_name || 'Untitled Image'}
+            </div>
             <div class="item-info">
               <span class="item-date">${new Date(item.created_at).toLocaleString()}</span>
               <span class="item-lang">${item.export_language.toUpperCase()}</span>
@@ -39,19 +42,19 @@ export function renderHistoryPanel(
     </div>
   `;
 
-    overlay.appendChild(panel);
-    container.appendChild(overlay);
+  overlay.appendChild(panel);
+  container.appendChild(overlay);
 
-    panel.querySelector('.close-history-btn')?.addEventListener('click', onClose);
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) onClose();
-    });
+  panel.querySelector('.close-history-btn')?.addEventListener('click', onClose);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) onClose();
+  });
 
-    panel.querySelectorAll('.view-item-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const id = (btn as HTMLElement).dataset.id;
-            const item = history.find(h => h.id === id);
-            if (item) onReplay(item);
-        });
+  panel.querySelectorAll('.view-item-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = (btn as HTMLElement).dataset.id;
+      const item = history.find(h => h.id === id);
+      if (item) onReplay(item);
     });
+  });
 }

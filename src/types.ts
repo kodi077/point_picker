@@ -11,6 +11,7 @@ export interface AppState {
   readonly imageNaturalWidth: number;   // 0 if no image loaded
   readonly imageNaturalHeight: number;  // 0 if no image loaded
   readonly imageObjectUrl: string;      // empty string if no image loaded
+  readonly imageName: string;           // original file name
   readonly points: ReadonlyArray<AnchorPoint>;
   readonly nameUnit: string;            // suffix for auto-naming, default "Point"
   readonly selectedPointId: string | null;
@@ -39,4 +40,5 @@ export interface ImageInfo {
   readonly naturalWidth: number;
   readonly naturalHeight: number;
   readonly objectUrl: string;
+  readonly fileName: string;
 }

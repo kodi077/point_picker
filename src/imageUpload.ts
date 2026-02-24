@@ -32,7 +32,7 @@ function processFile(file: File, onSuccess: UploadCallback, onError: UploadError
       onError('Image could not be read.');
       return;
     }
-    onSuccess({ naturalWidth, naturalHeight, objectUrl });
+    onSuccess({ naturalWidth, naturalHeight, objectUrl, fileName: file.name });
   };
 
   // 6. Set onerror handler

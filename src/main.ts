@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentUser) {
       saveExport(
         currentUser.id,
-        'Untiteld Image', // We don't have image name yet, maybe it should be state.imageName
+        state.imageName || 'Untitled Image',
         language,
         content,
         state.points

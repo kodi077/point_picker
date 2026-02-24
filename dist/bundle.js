@@ -6,6 +6,7 @@
       imageNaturalWidth: 0,
       imageNaturalHeight: 0,
       imageObjectUrl: "",
+      imageName: "",
       points: [],
       nameUnit: "Point",
       selectedPointId: null
@@ -16,7 +17,8 @@
       ...state,
       imageNaturalWidth: info.naturalWidth,
       imageNaturalHeight: info.naturalHeight,
-      imageObjectUrl: info.objectUrl
+      imageObjectUrl: info.objectUrl,
+      imageName: info.fileName
     };
   }
   function isNameDuplicate(state, name, excludeId) {
@@ -101,7 +103,7 @@
         onError("Image could not be read.");
         return;
       }
-      onSuccess({ naturalWidth, naturalHeight, objectUrl });
+      onSuccess({ naturalWidth, naturalHeight, objectUrl, fileName: file.name });
     };
     img.onerror = () => {
       onError("Image failed to load.");
@@ -525,6 +527,9 @@
       <ul class="history-list">
         ${history.map((item) => `
           <li class="history-item">
+            <div class="item-name" title="${item.image_name || "Untitled Image"}">
+              ${item.image_name || "Untitled Image"}
+            </div>
             <div class="item-info">
               <span class="item-date">${new Date(item.created_at).toLocaleString()}</span>
               <span class="item-lang">${item.export_language.toUpperCase()}</span>
@@ -12568,9 +12573,6 @@ ${suffix}`;
       console.error("Error signing out:", error.message);
   }
   function onAuthStateChange(callback) {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      callback(user);
-    });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       callback(session?.user ?? null);
     });
@@ -12737,8 +12739,7 @@ ${suffix}`;
       if (currentUser) {
         saveExport(
           currentUser.id,
-          "Untiteld Image",
-          // We don't have image name yet, maybe it should be state.imageName
+          state.imageName || "Untitled Image",
           language,
           content,
           state.points
