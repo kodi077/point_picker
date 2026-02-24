@@ -30,6 +30,7 @@ import { ExportLanguage } from './types';
 import { bindNavigationGuard } from './navigationGuard';
 import { showToast } from './toast';
 import { signInWithEmail, signOut, onAuthStateChange } from './auth';
+import { isSupabaseConfigured } from './supabase';
 import { User } from '@supabase/supabase-js';
 import { saveExport, getHistory } from './historyService';
 
@@ -71,6 +72,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const historyBtnEl = document.getElementById('history-btn') as HTMLButtonElement;
   const userProfileEl = document.getElementById('user-profile') as HTMLElement;
   const userAvatarEl = document.getElementById('user-avatar') as HTMLImageElement;
+  const authSectionEl = document.getElementById('user-auth-section') as HTMLElement;
+
+  if (!isSupabaseConfigured && authSectionEl) {
+    authSectionEl.style.display = 'none';
+  }
 
   let currentUser: User | null = null;
 

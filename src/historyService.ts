@@ -18,6 +18,7 @@ export async function saveExport(
     content: string,
     points: ReadonlyArray<AnchorPoint>
 ) {
+    if (!supabase) return;
     const { error } = await supabase.from('exports').insert({
         user_id: userId,
         image_name: imageName,
@@ -33,6 +34,7 @@ export async function saveExport(
 }
 
 export async function getHistory(userId: string): Promise<ExportHistoryItem[]> {
+    if (!supabase) return [];
     const { data, error } = await supabase
         .from('exports')
         .select('*')

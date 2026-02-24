@@ -12550,12 +12550,27 @@ ${suffix}`;
     console.warn("\u26A0\uFE0F  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217");
 
   // src/supabase.ts
-  var SUPABASE_URL = "https://tethmvyxfjztrgimurzz.supabase.co";
-  var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRldGhtdnl4Zmp6dHJnaW11cnp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5MDE5MTQsImV4cCI6MjA4NzQ3NzkxNH0.p4mX5_kgRAnQj7Ws-4ee1sN623gX7Eg-Wf1IYanBtC0";
-  var supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  var SUPABASE_URL = "";
+  var SUPABASE_ANON_KEY = "";
+  var supabaseInstance = null;
+  if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+    try {
+      supabaseInstance = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } catch (err) {
+      console.error("Failed to initialize Supabase client:", err);
+    }
+  } else {
+    console.warn("Supabase credentials missing. Sign-in and history features will be disabled.");
+  }
+  var supabase = supabaseInstance;
+  var isSupabaseConfigured = !!supabaseInstance;
 
   // src/auth.ts
   async function signInWithEmail(email) {
+    if (!supabase) {
+      console.error("Supabase not configured");
+      return;
+    }
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
@@ -12568,11 +12583,18 @@ ${suffix}`;
     }
   }
   async function signOut() {
+    if (!supabase)
+      return;
     const { error } = await supabase.auth.signOut();
     if (error)
       console.error("Error signing out:", error.message);
   }
   function onAuthStateChange(callback) {
+    if (!supabase) {
+      callback(null);
+      return () => {
+      };
+    }
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       callback(session?.user ?? null);
     });
@@ -12581,6 +12603,8 @@ ${suffix}`;
 
   // src/historyService.ts
   async function saveExport(userId, imageName, language, content, points) {
+    if (!supabase)
+      return;
     const { error } = await supabase.from("exports").insert({
       user_id: userId,
       image_name: imageName,
@@ -12594,6 +12618,8 @@ ${suffix}`;
     }
   }
   async function getHistory(userId) {
+    if (!supabase)
+      return [];
     const { data, error } = await supabase.from("exports").select("*").eq("user_id", userId).order("created_at", { ascending: false });
     if (error) {
       console.error("Error fetching history:", error.message);
@@ -12634,6 +12660,10 @@ ${suffix}`;
     const historyBtnEl = document.getElementById("history-btn");
     const userProfileEl = document.getElementById("user-profile");
     const userAvatarEl = document.getElementById("user-avatar");
+    const authSectionEl = document.getElementById("user-auth-section");
+    if (!isSupabaseConfigured && authSectionEl) {
+      authSectionEl.style.display = "none";
+    }
     let currentUser = null;
     const canvas = initCanvas(containerEl);
     let state = createInitialState();
@@ -12759,7 +12789,8 @@ ${suffix}`;
       if (user) {
         loginBtnEl.style.display = "none";
         userProfileEl.style.display = "flex";
-        userAvatarEl.src = user.user_metadata.avatar_url || "";
+        const defaultAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(user.email || "User") + "&background=6366f1&color=fff";
+        userAvatarEl.src = user.user_metadata.avatar_url || defaultAvatar;
         userAvatarEl.title = user.user_metadata.full_name || user.email || "";
         showToast(`Welcome, ${user.user_metadata.full_name || user.email}`);
       } else {
