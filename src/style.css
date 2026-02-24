@@ -606,15 +606,124 @@ body {
 }
 
 /* Modal */
+#export-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 .modal-box {
   background: var(--clr-surface);
   border: 1px solid var(--clr-border-high);
+  width: 90%;
+  max-width: 700px;
+  max-height: 80vh;
+  border-radius: var(--radius-lg);
+  padding: var(--sp-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-md);
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-box h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--clr-text-main);
 }
 
 .code-preview {
   background: #000 !important;
-  color: #10b981 !important;
-  border-color: var(--clr-border);
+  color: var(--clr-success) !important;
+  border: 1px solid var(--clr-border);
+  padding: var(--sp-md);
+  border-radius: var(--radius-md);
+  overflow: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-sm);
+  margin-top: var(--sp-xs);
+}
+
+.modal-actions button {
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#copy-btn {
+  background: var(--clr-primary);
+  border: none;
+  color: white;
+}
+
+#copy-btn:hover {
+  background: var(--clr-primary-hover);
+  transform: translateY(-1px);
+}
+
+#download-btn {
+  background: var(--clr-surface-high);
+  border: 1px solid var(--clr-border-high);
+  color: var(--clr-text-main);
+}
+
+#download-btn:hover {
+  background: var(--clr-border-high);
+}
+
+#close-modal-btn {
+  background: transparent;
+  border: 1px solid var(--clr-border-high);
+  color: var(--clr-text-muted);
+}
+
+#close-modal-btn:hover {
+  color: var(--clr-danger);
+  border-color: var(--clr-danger);
+  background: rgba(239, 68, 68, 0.05);
 }
 
 .visually-hidden {
