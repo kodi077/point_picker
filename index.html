@@ -5,14 +5,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Image Anchor Point Tool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="src/style.css">
 </head>
 
 <body>
   <header class="app-header">
-    <h1 class="app-title">Image Anchor Point Tool</h1>
-    <div id="export-controls"></div>
-    <div id="name-unit-container"></div>
+    <div class="header-left">
+      <div class="logo-box">
+        <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="3" fill="currentColor" />
+          <path
+            d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z"
+            stroke="currentColor" stroke-width="2" />
+        </svg>
+        <h1 class="app-title">PointPicker<span>Engine</span></h1>
+      </div>
+      <button id="reset-image-btn" class="reset-btn secondary-btn" style="display: none;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+          <polyline points="12 2 12 12" />
+        </svg>
+        Deselect Image
+      </button>
+    </div>
+    <div class="header-right">
+      <div id="name-unit-container" class="name-unit-wrapper"></div>
+      <div id="export-controls" class="export-wrapper"></div>
+    </div>
   </header>
 
   <main class="app-main">

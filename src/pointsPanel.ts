@@ -58,10 +58,14 @@ export function renderPointsPanel(
     const dragHandle = document.createElement('span');
     dragHandle.className = 'drag-handle';
     dragHandle.setAttribute('aria-label', 'Drag to reorder');
-    dragHandle.textContent = '⠿';
+    dragHandle.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/>
+      </svg>
+    `;
     li.appendChild(dragHandle);
 
-    // b. Index
+    // b. Index symbol
     const indexSpan = document.createElement('span');
     indexSpan.className = 'point-index';
     indexSpan.textContent = String(originalIndex);
@@ -74,17 +78,21 @@ export function renderPointsPanel(
     nameSpan.textContent = point.pointName;
     li.appendChild(nameSpan);
 
-    // d. Coords
+    // d. Coordinates badge
     const coordsSpan = document.createElement('span');
     coordsSpan.className = 'point-coords';
     coordsSpan.textContent = `${point.xAnchor.toFixed(3)} , ${point.yAnchor.toFixed(3)}`;
     li.appendChild(coordsSpan);
 
-    // e. Delete button
+    // e. Action button area
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'delete-btn';
     deleteBtn.setAttribute('aria-label', `Delete point ${point.pointName}`);
-    deleteBtn.textContent = '×';
+    deleteBtn.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    `;
     li.appendChild(deleteBtn);
 
     ul.appendChild(li);
@@ -95,7 +103,7 @@ export function renderPointsPanel(
   // 4. CLEAR ALL BUTTON
   const clearAllBtn = document.createElement('button');
   clearAllBtn.className = 'clear-all-btn';
-  clearAllBtn.textContent = 'Clear All';
+  clearAllBtn.textContent = 'Clear All Points';
   panelEl.appendChild(clearAllBtn);
 
   // 5. EVENT LISTENERS

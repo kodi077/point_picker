@@ -123,3 +123,7 @@ export function setNameUnit(state: AppState, nameUnit: string): AppState {
 export function selectPoint(state: AppState, id: string | null): AppState {
   return { ...state, selectedPointId: id };
 }
+
+export function resetState(): AppState {
+  return createInitialState();
+}

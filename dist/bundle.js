@@ -88,6 +88,9 @@
   function selectPoint(state, id) {
     return { ...state, selectedPointId: id };
   }
+  function resetState() {
+    return createInitialState();
+  }
 
   // src/coordinateEngine.ts
   function calculateAnchor(clickX, clickY, naturalWidth, naturalHeight) {
@@ -297,7 +300,11 @@
       const dragHandle = document.createElement("span");
       dragHandle.className = "drag-handle";
       dragHandle.setAttribute("aria-label", "Drag to reorder");
-      dragHandle.textContent = "\u283F";
+      dragHandle.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/>
+      </svg>
+    `;
       li.appendChild(dragHandle);
       const indexSpan = document.createElement("span");
       indexSpan.className = "point-index";
@@ -315,14 +322,18 @@
       const deleteBtn = document.createElement("button");
       deleteBtn.className = "delete-btn";
       deleteBtn.setAttribute("aria-label", `Delete point ${point.pointName}`);
-      deleteBtn.textContent = "\xD7";
+      deleteBtn.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    `;
       li.appendChild(deleteBtn);
       ul.appendChild(li);
     });
     panelEl.appendChild(ul);
     const clearAllBtn = document.createElement("button");
     clearAllBtn.className = "clear-all-btn";
-    clearAllBtn.textContent = "Clear All";
+    clearAllBtn.textContent = "Clear All Points";
     panelEl.appendChild(clearAllBtn);
     ul.querySelectorAll(".delete-btn").forEach((btn) => {
       btn.addEventListener("click", (e) => {
@@ -871,6 +882,7 @@ public record Points(string PointName, double XAnchor, double YAnchor);`;
     const exportControlsEl = document.getElementById("export-controls");
     const tooltipEl = document.getElementById("coordinate-tooltip");
     const imageContainerEl = document.getElementById("image-container");
+    const resetBtnEl = document.getElementById("reset-image-btn");
     const canvas = initCanvas(containerEl);
     let state = createInitialState();
     function setState(newState) {
@@ -881,6 +893,15 @@ public record Points(string PointName, double XAnchor, double YAnchor);`;
       renderImage(containerEl, canvas, state);
       renderDots(canvas, state);
       renderPointsPanel(panelEl, state, handleDelete, handleSelect, handleHover, handleClearAll);
+      if (state.imageNaturalWidth > 0) {
+        dropZoneEl.style.display = "none";
+        imageContainerEl.style.display = "flex";
+        resetBtnEl.style.display = "flex";
+      } else {
+        dropZoneEl.style.display = "flex";
+        imageContainerEl.style.display = "none";
+        resetBtnEl.style.display = "none";
+      }
       const nameUnitContainer = document.getElementById("name-unit-container");
       if (nameUnitContainer) {
         renderNameUnitControl(nameUnitContainer, state.nameUnit, handleNameUnitChange);
@@ -913,6 +934,12 @@ public record Points(string PointName, double XAnchor, double YAnchor);`;
         setState({ ...state, points: [], selectedPointId: null });
       }
     }
+    function handleReset() {
+      if (confirm("Deselect image and remove all points?")) {
+        setState(resetState());
+      }
+    }
+    resetBtnEl.addEventListener("click", handleReset);
     canvas.addEventListener("click", (e) => {
       const coords = getClickCoordinates(e, canvas, state);
       if (!coords)

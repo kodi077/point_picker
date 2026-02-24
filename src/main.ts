@@ -8,6 +8,7 @@ import {
   reorderPoints,
   selectPoint,
   setNameUnit,
+  resetState,
 } from './state';
 import { calculateAnchor } from './coordinateEngine';
 import { bindImageUpload } from './imageUpload';
@@ -57,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const exportControlsEl = document.getElementById('export-controls') as HTMLElement;
   const tooltipEl = document.getElementById('coordinate-tooltip') as HTMLElement;
   const imageContainerEl = document.getElementById('image-container') as HTMLElement;
+  const resetBtnEl = document.getElementById('reset-image-btn') as HTMLButtonElement;
 
   // --- Canvas ---
   const canvas = initCanvas(containerEl);
@@ -73,6 +75,17 @@ document.addEventListener('DOMContentLoaded', () => {
     renderImage(containerEl, canvas, state);
     renderDots(canvas, state);
     renderPointsPanel(panelEl, state, handleDelete, handleSelect, handleHover, handleClearAll);
+
+    // Toggle visibility based on image state
+    if (state.imageNaturalWidth > 0) {
+      dropZoneEl.style.display = 'none';
+      imageContainerEl.style.display = 'flex';
+      resetBtnEl.style.display = 'flex';
+    } else {
+      dropZoneEl.style.display = 'flex';
+      imageContainerEl.style.display = 'none';
+      resetBtnEl.style.display = 'none';
+    }
 
     const nameUnitContainer = document.getElementById('name-unit-container') as HTMLElement;
     if (nameUnitContainer) {
@@ -114,6 +127,15 @@ document.addEventListener('DOMContentLoaded', () => {
       setState({ ...state, points: [], selectedPointId: null });
     }
   }
+
+  function handleReset(): void {
+    if (confirm('Deselect image and remove all points?')) {
+      setState(resetState());
+    }
+  }
+
+  // --- Reset button ---
+  resetBtnEl.addEventListener('click', handleReset);
 
   // --- Canvas click: add point ---
   canvas.addEventListener('click', (e) => {
