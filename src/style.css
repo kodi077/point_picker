@@ -1,0 +1,513 @@
+/* =============================================
+   CSS Custom Properties
+   ============================================= */
+:root {
+  --color-primary: #3B82F6;
+  --color-primary-dark: #1E3A5F;
+  --color-selected: #EF4444;
+  --color-hover: #F59E0B;
+  --color-bg: #F9FAFB;
+  --color-surface: #FFFFFF;
+  --color-border: #E5E7EB;
+  --color-border-dark: #D1D5DB;
+  --color-text: #111827;
+  --color-text-muted: #6B7280;
+  --color-code-bg: #F3F4F6;
+  --color-danger: #DC2626;
+  --color-insertion-line: #3B82F6;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+/* =============================================
+   Reset & Base
+   ============================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+}
+
+/* =============================================
+   App Header
+   ============================================= */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 20px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+
+.app-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  white-space: nowrap;
+}
+
+/* Export controls in header */
+#export-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+#export-language-select {
+  padding: 6px 10px;
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+#export-btn {
+  padding: 6px 14px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+#export-btn:hover {
+  background: var(--color-primary-dark);
+}
+
+/* =============================================
+   Main Layout (two-column on >= 768px)
+   ============================================= */
+.app-main {
+  display: grid;
+  grid-template-columns: 60fr 40fr;
+  gap: 20px;
+  padding: 20px;
+  min-height: calc(100vh - 58px);
+  align-items: start;
+}
+
+@media (max-width: 767px) {
+  .app-main {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =============================================
+   Canvas Section
+   ============================================= */
+.canvas-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Upload zone */
+.upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 2px dashed var(--color-border-dark);
+  border-radius: var(--radius-md);
+  padding: 28px 20px;
+  background: var(--color-surface);
+  transition: border-color 0.15s, background 0.15s;
+  cursor: default;
+}
+
+.upload-zone.drag-over {
+  border-color: var(--color-primary);
+  background: #EFF6FF;
+}
+
+.upload-hint {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.upload-label {
+  display: inline-block;
+  padding: 8px 18px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.upload-label:hover {
+  background: var(--color-primary-dark);
+}
+
+/* Image container */
+.image-container {
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+
+.image-container:focus {
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+/* =============================================
+   Panel Section
+   ============================================= */
+.panel-section {
+  position: sticky;
+  top: 20px;
+}
+
+.points-panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow-y: auto;
+  max-height: 80vh;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Panel header */
+.panel-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-code-bg);
+}
+
+.image-dimensions {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-family: 'Courier New', monospace;
+}
+
+/* Name unit control */
+.name-unit-label {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.name-unit-input {
+  width: 120px;
+  padding: 4px 8px;
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+/* Empty state */
+.empty-state {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+/* =============================================
+   Points List
+   ============================================= */
+.points-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.point-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background 0.1s;
+  border-left: 3px solid transparent;
+}
+
+.point-row:hover {
+  background: #F0F4FF;
+}
+
+.point-row.selected {
+  border-left-color: var(--color-primary);
+  background: #EFF6FF;
+}
+
+.point-row.dragging {
+  opacity: 0.4;
+}
+
+.drag-handle {
+  cursor: grab;
+  padding: 2px 4px;
+  user-select: none;
+  color: var(--color-text-muted);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.point-index {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  min-width: 18px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.point-name {
+  font-weight: 600;
+  font-size: 13px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: text;
+}
+
+.point-coords {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  font-family: 'Courier New', monospace;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.delete-btn:hover {
+  color: var(--color-danger);
+}
+
+/* Insertion line for drag-and-drop */
+.insertion-line {
+  height: 2px;
+  background: var(--color-insertion-line);
+  margin: 0 4px;
+  pointer-events: none;
+}
+
+/* Clear All button */
+.clear-all-btn {
+  display: block;
+  width: calc(100% - 24px);
+  margin: 10px 12px;
+  padding: 7px;
+  background: none;
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.clear-all-btn:hover {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+/* =============================================
+   Inline Rename
+   ============================================= */
+.rename-input {
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--color-primary);
+  border-radius: 3px;
+  padding: 1px 4px;
+  outline: none;
+  min-width: 60px;
+}
+
+.rename-error {
+  font-size: 11px;
+  color: var(--color-danger);
+  font-style: italic;
+}
+
+/* =============================================
+   Coordinate Tooltip
+   ============================================= */
+.coordinate-tooltip {
+  position: fixed;
+  background: var(--color-primary-dark);
+  color: #fff;
+  font: 12px 'Courier New', monospace;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+  display: none;
+  z-index: 500;
+  white-space: nowrap;
+}
+
+/* =============================================
+   Export Modal
+   ============================================= */
+#export-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-box {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  max-width: 700px;
+  width: 100%;
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-box h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: var(--color-primary-dark);
+}
+
+.code-preview {
+  background: var(--color-code-bg);
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  margin-bottom: 16px;
+  border: 1px solid var(--color-border);
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.modal-actions button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+#copy-btn {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+#copy-btn:hover {
+  background: var(--color-primary-dark);
+}
+
+#download-btn {
+  background: #10B981;
+  color: #fff;
+}
+
+#download-btn:hover {
+  background: #059669;
+}
+
+#close-modal-btn {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+#close-modal-btn:hover {
+  background: var(--color-border-dark);
+}
+
+/* =============================================
+   Accessibility: visually hidden
+   ============================================= */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* =============================================
+   Toast Notification
+   ============================================= */
+.toast-notification {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--color-primary-dark, #1D4ED8);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 2000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toast-notification.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}

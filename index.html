@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Anchor Point Tool</title>
+  <link rel="stylesheet" href="src/style.css">
+</head>
+
+<body>
+  <header class="app-header">
+    <h1 class="app-title">Image Anchor Point Tool</h1>
+    <div id="export-controls"></div>
+    <div id="name-unit-container"></div>
+  </header>
+
+  <main class="app-main">
+    <section class="canvas-section">
+      <div id="upload-zone" class="upload-zone">
+        <p class="upload-hint">Drag an image here or</p>
+        <label for="file-input" class="upload-label">Choose Image</label>
+        <input type="file" id="file-input" accept="image/*" class="visually-hidden">
+      </div>
+      <div id="image-container" class="image-container" role="img" tabindex="0"
+        aria-label="Image canvas. Click to add anchor points."></div>
+      <div id="coordinate-tooltip" class="coordinate-tooltip" aria-hidden="true"></div>
+    </section>
+
+    <aside class="panel-section">
+      <div id="points-panel" class="points-panel" aria-live="polite"></div>
+    </aside>
+  </main>
+
+  <script src="dist/bundle.js" defer></script>
+</body>
+
+</html>
