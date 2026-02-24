@@ -32,10 +32,13 @@ export function renderPointsPanel(
 
   // 2. EMPTY STATE
   if (state.points.length === 0) {
-    const emptyP = document.createElement('p');
-    emptyP.className = 'empty-state';
-    emptyP.textContent = 'No points yet. Click anywhere on the image to add one.';
-    panelEl.appendChild(emptyP);
+    const emptyDiv = document.createElement('div');
+    emptyDiv.className = 'empty-state';
+    emptyDiv.innerHTML = `
+      <h3>No points yet</h3>
+      <p>Click anywhere on the image to add your first anchor point.</p>
+    `;
+    panelEl.appendChild(emptyDiv);
     return;
   }
 

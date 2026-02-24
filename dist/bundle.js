@@ -283,10 +283,13 @@
     header.appendChild(dimsSpan);
     panelEl.appendChild(header);
     if (state.points.length === 0) {
-      const emptyP = document.createElement("p");
-      emptyP.className = "empty-state";
-      emptyP.textContent = "No points yet. Click anywhere on the image to add one.";
-      panelEl.appendChild(emptyP);
+      const emptyDiv = document.createElement("div");
+      emptyDiv.className = "empty-state";
+      emptyDiv.innerHTML = `
+      <h3>No points yet</h3>
+      <p>Click anywhere on the image to add your first anchor point.</p>
+    `;
+      panelEl.appendChild(emptyDiv);
       return;
     }
     const ul = document.createElement("ul");
@@ -550,7 +553,7 @@
     const label = document.createElement("label");
     label.htmlFor = "name-unit-input";
     label.className = "name-unit-label";
-    label.textContent = "Name unit:";
+    label.textContent = "Point name:";
     containerEl.appendChild(label);
     const input = document.createElement("input");
     input.type = "text";
@@ -559,7 +562,7 @@
     input.value = currentNameUnit;
     input.maxLength = 32;
     input.setAttribute("aria-label", "Name unit for auto-generated point names");
-    input.placeholder = "Point";
+    input.placeholder = "e.g. Point";
     containerEl.appendChild(input);
     input.addEventListener("change", () => {
       const trimmedValue = input.value.trim();

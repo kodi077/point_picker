@@ -16,7 +16,7 @@ export function renderNameUnitControl(
   const label = document.createElement('label');
   label.htmlFor = 'name-unit-input';
   label.className = 'name-unit-label';
-  label.textContent = 'Name unit:';
+  label.textContent = 'Point name:';
   containerEl.appendChild(label);
 
   const input = document.createElement('input');
@@ -26,7 +26,7 @@ export function renderNameUnitControl(
   input.value = currentNameUnit;
   input.maxLength = 32;
   input.setAttribute('aria-label', 'Name unit for auto-generated point names');
-  input.placeholder = 'Point';
+  input.placeholder = 'e.g. Point';
   containerEl.appendChild(input);
 
   // 'change' event — trim and commit
