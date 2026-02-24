@@ -544,6 +544,23 @@ body {
 }
 
 /* =============================================
+   Reorder Visuals
+   ============================================= */
+.point-row.dragging {
+  opacity: 0.5;
+  background: var(--clr-surface-high);
+  border-color: var(--clr-primary);
+}
+
+.insertion-line {
+  height: 2px;
+  background: var(--clr-primary);
+  margin: var(--sp-xs) 0;
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 8px var(--clr-primary-glow);
+}
+
+/* =============================================
    Components
    ============================================= */
 .clear-all-btn {
@@ -567,10 +584,25 @@ body {
 
 /* Toast */
 .toast-notification {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
   background: var(--clr-surface-high);
   border: 1px solid var(--clr-primary);
   color: var(--clr-text-main);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 2000;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  opacity: 0;
+}
+
+.toast-notification.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
 }
 
 /* Modal */

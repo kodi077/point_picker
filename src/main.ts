@@ -203,14 +203,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Navigation guard ---
   bindNavigationGuard(() => state);
 
-  // --- Event delegation for clear-all (handled inside renderPointsPanel now) ---
-  // Wire using event delegation on panelEl as a fallback
-  panelEl.addEventListener('click', (e) => {
-    const target = e.target as HTMLElement;
-    if (target.classList.contains('clear-all-btn')) {
-      handleClearAll();
-    }
-  });
 
   // --- Initial render ---
   render();

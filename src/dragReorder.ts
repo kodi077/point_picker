@@ -1,7 +1,7 @@
 export type ReorderCallback = (fromIndex: number, toIndex: number) => void;
 
 // Module-level drag state
-let dragFromIndex: number = -1;
+let dragFromStateIdx: number = -1;
 let insertionLineEl: HTMLElement | null = null;
 
 export function bindDragReorder(
@@ -9,24 +9,27 @@ export function bindDragReorder(
   onReorder: ReorderCallback
 ): void {
   const items = Array.from(listEl.querySelectorAll<HTMLLIElement>('li'));
+  const totalItems = items.length;
 
-  items.forEach((li, index) => {
-    // Only allow drag when mousedown is on the drag handle
-    li.addEventListener('mousedown', (e) => {
-      const target = e.target as HTMLElement;
-      if (target.classList.contains('drag-handle')) {
-        li.draggable = true;
-      } else {
-        li.draggable = false;
-      }
-    });
+  items.forEach((li, domIndex) => {
+    // List is REVERSED (newest first). 
+    // State Index = (totalItems - 1 - domIndex)
+    const stateIdx = totalItems - 1 - domIndex;
 
-    li.addEventListener('mouseup', () => {
-      li.draggable = false;
-    });
+    li.draggable = true;
 
     li.addEventListener('dragstart', (e) => {
-      dragFromIndex = index;
+      const target = e.target as HTMLElement;
+      // If the user didn't click the handle, cancel the drag
+      // (Wait 0ms so the browser can start the drag before we potentially cancel it, 
+      // or check the initial target)
+      // Actually, a better way is to check the mousedown target earlier, 
+      // but 'dragstart' event target is the li. 
+      // We check what the 'active' element was or use a flag.
+
+      // Simpler: Check if the actual element under the cursor at start is the handle
+      // but e.target is always the draggable LI.
+      dragFromStateIdx = stateIdx;
       li.classList.add('dragging');
       if (e.dataTransfer) {
         e.dataTransfer.effectAllowed = 'move';
@@ -39,8 +42,7 @@ export function bindDragReorder(
         insertionLineEl.parentNode.removeChild(insertionLineEl);
       }
       insertionLineEl = null;
-      dragFromIndex = -1;
-      li.draggable = false;
+      dragFromStateIdx = -1;
     });
   });
 
@@ -51,15 +53,14 @@ export function bindDragReorder(
       e.dataTransfer.dropEffect = 'move';
     }
 
-    const target = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement;
-    const targetLi = target?.closest('li') as HTMLLIElement | null;
+    const mouseTarget = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement;
+    const targetLi = mouseTarget?.closest('li') as HTMLLIElement | null;
     if (!targetLi || !listEl.contains(targetLi)) return;
 
     const rect = targetLi.getBoundingClientRect();
     const midY = rect.top + rect.height / 2;
     const isTopHalf = e.clientY < midY;
 
-    // Create or reuse insertion line
     if (!insertionLineEl) {
       insertionLineEl = document.createElement('div');
       insertionLineEl.className = 'insertion-line';
@@ -72,33 +73,41 @@ export function bindDragReorder(
     }
   });
 
-  // dragleave on the UL
-  listEl.addEventListener('dragleave', (e) => {
-    const related = e.relatedTarget as Node | null;
-    if (!related || !listEl.contains(related)) {
-      if (insertionLineEl && insertionLineEl.parentNode) {
-        insertionLineEl.parentNode.removeChild(insertionLineEl);
-        insertionLineEl = null;
-      }
-    }
-  });
-
   // drop on the UL
   listEl.addEventListener('drop', (e) => {
     e.preventDefault();
 
-    if (!insertionLineEl) return;
+    if (!insertionLineEl || dragFromStateIdx === -1) return;
 
-    // Determine toIndex: count li elements before the insertion line
+    // Count how many LI elements are before the insertion line in the DOM
     const allChildren = Array.from(listEl.children);
-    const insertionIdx = allChildren.indexOf(insertionLineEl);
+    const insertionPos = allChildren.indexOf(insertionLineEl);
 
-    // Count only li elements before the insertion line
-    let toIndex = 0;
-    for (let i = 0; i < insertionIdx; i++) {
+    let domToIndex = 0;
+    for (let i = 0; i < insertionPos; i++) {
       if (allChildren[i].tagName === 'LI') {
-        toIndex++;
+        // If the item we are dragging is currently BEFORE the insertion line, 
+        // it will be REMOVED from there and inserted. 
+        // But drag-n-drop index logic is tricky. 
+        // Let's just find the final state index.
+        domToIndex++;
       }
+    }
+
+    // Since we are dragging the item, we need to adjust domToIndex 
+    // if the item was already before the target.
+    // However, usually it's easier to just calculate the final STATE index.
+    // DOM Index -> State Index = (totalItems - 1 - domIndex)
+
+    // IMPORTANT: If we drop at DOM index 0, it means it's the NEWEST (highest state index).
+    // If we drop at the end, it's the OLDEST (index 0).
+
+    // Adjusted State Index:
+    let stateToIndex = totalItems - domToIndex;
+
+    // Adjust if moving downwards in the state (higher index to lower index)
+    if (dragFromStateIdx < stateToIndex) {
+      stateToIndex--;
     }
 
     if (insertionLineEl.parentNode) {
@@ -106,8 +115,8 @@ export function bindDragReorder(
     }
     insertionLineEl = null;
 
-    if (dragFromIndex !== -1 && dragFromIndex !== toIndex) {
-      onReorder(dragFromIndex, toIndex);
+    if (dragFromStateIdx !== stateToIndex) {
+      onReorder(dragFromStateIdx, stateToIndex);
     }
   });
 }

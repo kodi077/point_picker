@@ -24,9 +24,6 @@
       (p) => p.pointName === name && p.id !== excludeId
     );
   }
-  function isAutoNamed(point, index, nameUnit) {
-    return point.pointName === nameUnit + (index + 1).toString();
-  }
   function addPoint(state, xAnchor, yAnchor) {
     const nameUnit = state.nameUnit;
     const autoName = nameUnit + (state.points.length + 1).toString();
@@ -48,19 +45,10 @@
     return { ...state, points };
   }
   function deletePoint(state, id) {
-    const originalPoints = state.points;
-    const filtered = originalPoints.filter((p) => p.id !== id);
-    const recalculated = filtered.map((p, newIndex) => {
-      const originalIndex = originalPoints.findIndex((op) => op.id === p.id);
-      if (isAutoNamed(p, originalIndex, state.nameUnit)) {
-        const newName = state.nameUnit + (newIndex + 1).toString();
-        return { ...p, pointName: newName };
-      }
-      return p;
-    });
+    const filtered = state.points.filter((p) => p.id !== id);
     return {
       ...state,
-      points: recalculated,
+      points: filtered,
       selectedPointId: state.selectedPointId === id ? null : state.selectedPointId
     };
   }
@@ -68,16 +56,7 @@
     const points = [...state.points];
     const [moved] = points.splice(fromIndex, 1);
     points.splice(toIndex, 0, moved);
-    const originalPoints = state.points;
-    const recalculated = points.map((p, newIndex) => {
-      const originalIndex = originalPoints.findIndex((op) => op.id === p.id);
-      if (isAutoNamed(p, originalIndex, state.nameUnit)) {
-        const newName = state.nameUnit + (newIndex + 1).toString();
-        return { ...p, pointName: newName };
-      }
-      return p;
-    });
-    return { ...state, points: recalculated };
+    return { ...state, points };
   }
   function setNameUnit(state, nameUnit) {
     return { ...state, nameUnit };
@@ -454,24 +433,17 @@
   }
 
   // src/dragReorder.ts
-  var dragFromIndex = -1;
+  var dragFromStateIdx = -1;
   var insertionLineEl = null;
   function bindDragReorder(listEl, onReorder) {
     const items = Array.from(listEl.querySelectorAll("li"));
-    items.forEach((li, index) => {
-      li.addEventListener("mousedown", (e) => {
-        const target = e.target;
-        if (target.classList.contains("drag-handle")) {
-          li.draggable = true;
-        } else {
-          li.draggable = false;
-        }
-      });
-      li.addEventListener("mouseup", () => {
-        li.draggable = false;
-      });
+    const totalItems = items.length;
+    items.forEach((li, domIndex) => {
+      const stateIdx = totalItems - 1 - domIndex;
+      li.draggable = true;
       li.addEventListener("dragstart", (e) => {
-        dragFromIndex = index;
+        const target = e.target;
+        dragFromStateIdx = stateIdx;
         li.classList.add("dragging");
         if (e.dataTransfer) {
           e.dataTransfer.effectAllowed = "move";
@@ -483,8 +455,7 @@
           insertionLineEl.parentNode.removeChild(insertionLineEl);
         }
         insertionLineEl = null;
-        dragFromIndex = -1;
-        li.draggable = false;
+        dragFromStateIdx = -1;
       });
     });
     listEl.addEventListener("dragover", (e) => {
@@ -492,8 +463,8 @@
       if (e.dataTransfer) {
         e.dataTransfer.dropEffect = "move";
       }
-      const target = document.elementFromPoint(e.clientX, e.clientY);
-      const targetLi = target?.closest("li");
+      const mouseTarget = document.elementFromPoint(e.clientX, e.clientY);
+      const targetLi = mouseTarget?.closest("li");
       if (!targetLi || !listEl.contains(targetLi))
         return;
       const rect = targetLi.getBoundingClientRect();
@@ -509,33 +480,28 @@
         listEl.insertBefore(insertionLineEl, targetLi.nextSibling);
       }
     });
-    listEl.addEventListener("dragleave", (e) => {
-      const related = e.relatedTarget;
-      if (!related || !listEl.contains(related)) {
-        if (insertionLineEl && insertionLineEl.parentNode) {
-          insertionLineEl.parentNode.removeChild(insertionLineEl);
-          insertionLineEl = null;
-        }
-      }
-    });
     listEl.addEventListener("drop", (e) => {
       e.preventDefault();
-      if (!insertionLineEl)
+      if (!insertionLineEl || dragFromStateIdx === -1)
         return;
       const allChildren = Array.from(listEl.children);
-      const insertionIdx = allChildren.indexOf(insertionLineEl);
-      let toIndex = 0;
-      for (let i = 0; i < insertionIdx; i++) {
+      const insertionPos = allChildren.indexOf(insertionLineEl);
+      let domToIndex = 0;
+      for (let i = 0; i < insertionPos; i++) {
         if (allChildren[i].tagName === "LI") {
-          toIndex++;
+          domToIndex++;
         }
+      }
+      let stateToIndex = totalItems - domToIndex;
+      if (dragFromStateIdx < stateToIndex) {
+        stateToIndex--;
       }
       if (insertionLineEl.parentNode) {
         insertionLineEl.parentNode.removeChild(insertionLineEl);
       }
       insertionLineEl = null;
-      if (dragFromIndex !== -1 && dragFromIndex !== toIndex) {
-        onReorder(dragFromIndex, toIndex);
+      if (dragFromStateIdx !== stateToIndex) {
+        onReorder(dragFromStateIdx, stateToIndex);
       }
     });
   }
@@ -985,12 +951,6 @@ public record Points(string PointName, double XAnchor, double YAnchor);`;
     renderExportControls(exportControlsEl, () => state.points);
     bindInlineRename(panelEl, () => state, handleRename);
     bindNavigationGuard(() => state);
-    panelEl.addEventListener("click", (e) => {
-      const target = e.target;
-      if (target.classList.contains("clear-all-btn")) {
-        handleClearAll();
-      }
-    });
     render();
   });
 })();

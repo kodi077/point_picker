@@ -63,24 +63,11 @@ export function renamePoint(state: AppState, id: string, newName: string): AppSt
 }
 
 export function deletePoint(state: AppState, id: string): AppState {
-  // Record the original index-based names before deletion
-  const originalPoints = state.points;
-  const filtered = originalPoints.filter((p) => p.id !== id);
-
-  // Recalculate auto-names
-  const recalculated = filtered.map((p, newIndex) => {
-    // Find original index to check if it was auto-named
-    const originalIndex = originalPoints.findIndex((op) => op.id === p.id);
-    if (isAutoNamed(p, originalIndex, state.nameUnit)) {
-      const newName = state.nameUnit + (newIndex + 1).toString();
-      return { ...p, pointName: newName };
-    }
-    return p;
-  });
+  const filtered = state.points.filter((p) => p.id !== id);
 
   return {
     ...state,
-    points: recalculated,
+    points: filtered,
     selectedPointId: state.selectedPointId === id ? null : state.selectedPointId,
   };
 }
@@ -90,19 +77,7 @@ export function reorderPoints(state: AppState, fromIndex: number, toIndex: numbe
   const [moved] = points.splice(fromIndex, 1);
   points.splice(toIndex, 0, moved);
 
-  // Track original auto-names before reorder
-  const originalPoints = state.points;
-
-  const recalculated = points.map((p, newIndex) => {
-    const originalIndex = originalPoints.findIndex((op) => op.id === p.id);
-    if (isAutoNamed(p, originalIndex, state.nameUnit)) {
-      const newName = state.nameUnit + (newIndex + 1).toString();
-      return { ...p, pointName: newName };
-    }
-    return p;
-  });
-
-  return { ...state, points: recalculated };
+  return { ...state, points };
 }
 
 export function setNameUnit(state: AppState, nameUnit: string): AppState {
