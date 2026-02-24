@@ -243,7 +243,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (user) {
       loginBtnEl.style.display = 'none';
       userProfileEl.style.display = 'flex';
-      userAvatarEl.src = user.user_metadata.avatar_url || '';
+
+      const defaultAvatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.email || 'User') + '&background=6366f1&color=fff';
+      userAvatarEl.src = user.user_metadata.avatar_url || defaultAvatar;
       userAvatarEl.title = user.user_metadata.full_name || user.email || '';
       showToast(`Welcome, ${user.user_metadata.full_name || user.email}`);
     } else {

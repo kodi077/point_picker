@@ -2,7 +2,7 @@
   "name": "anchor-tool",
   "version": "1.0.0",
   "scripts": {
-    "build": "npx esbuild src/main.ts --bundle --outfile=dist/bundle.js --sourcemap",
+    "build": "npx esbuild src/main.ts --bundle --outfile=dist/bundle.js --sourcemap --define:process.env.SUPABASE_URL=\"\\\"$SUPABASE_URL\\\"\" --define:process.env.SUPABASE_ANON_KEY=\"\\\"$SUPABASE_ANON_KEY\\\"\"",
     "watch": "npx esbuild src/main.ts --bundle --outfile=dist/bundle.js --sourcemap --watch",
     "serve": "npx serve -l 3000 ."
   },
