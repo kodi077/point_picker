@@ -12550,17 +12550,15 @@ ${suffix}`;
     console.warn("\u26A0\uFE0F  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217");
 
   // src/supabase.ts
-  var SUPABASE_URL = "";
-  var SUPABASE_ANON_KEY = "";
+  var FALLBACK_URL = "https://tethmvyxfjztrgimurzz.supabase.co";
+  var FALLBACK_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRldGhtdnl4Zmp6dHJnaW11cnp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5MDE5MTQsImV4cCI6MjA4NzQ3NzkxNH0.p4mX5_kgRAnQj7Ws-4ee1sN623gX7Eg-Wf1IYanBtC0";
+  var SUPABASE_URL = FALLBACK_URL;
+  var SUPABASE_ANON_KEY = FALLBACK_KEY;
   var supabaseInstance = null;
-  if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-    try {
-      supabaseInstance = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    } catch (err) {
-      console.error("Failed to initialize Supabase client:", err);
-    }
-  } else {
-    console.warn("Supabase credentials missing. Sign-in and history features will be disabled.");
+  try {
+    supabaseInstance = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } catch (err) {
+    console.error("Failed to initialize Supabase client:", err);
   }
   var supabase = supabaseInstance;
   var isSupabaseConfigured = !!supabaseInstance;
@@ -12661,8 +12659,8 @@ ${suffix}`;
     const userProfileEl = document.getElementById("user-profile");
     const userAvatarEl = document.getElementById("user-avatar");
     const authSectionEl = document.getElementById("user-auth-section");
-    if (!isSupabaseConfigured && authSectionEl) {
-      authSectionEl.style.display = "none";
+    if (authSectionEl) {
+      authSectionEl.style.display = "block";
     }
     let currentUser = null;
     const canvas = initCanvas(containerEl);
@@ -12800,6 +12798,10 @@ ${suffix}`;
       }
     });
     loginBtnEl.addEventListener("click", () => {
+      if (!isSupabaseConfigured) {
+        showToast("Login is currently unavailable (system configuration issue)");
+        return;
+      }
       const email = prompt("Enter your email for the magic login link:");
       if (email) {
         signInWithEmail(email).then(() => showToast("Check your email for the login link!")).catch((err) => showToast(`Error: ${err.message}`));

@@ -74,8 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const userAvatarEl = document.getElementById('user-avatar') as HTMLImageElement;
   const authSectionEl = document.getElementById('user-auth-section') as HTMLElement;
 
-  if (!isSupabaseConfigured && authSectionEl) {
-    authSectionEl.style.display = 'none';
+  // Ensure auth section is visible even if Supabase is still connecting
+  if (authSectionEl) {
+    authSectionEl.style.display = 'block';
   }
 
   let currentUser: User | null = null;
@@ -262,6 +263,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   loginBtnEl.addEventListener('click', () => {
+    if (!isSupabaseConfigured) {
+      showToast('Login is currently unavailable (system configuration issue)');
+      return;
+    }
     const email = prompt('Enter your email for the magic login link:');
     if (email) {
       signInWithEmail(email)
