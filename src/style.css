@@ -143,6 +143,62 @@ body {
   font-weight: 500;
 }
 
+/* Authentication */
+.auth-wrapper {
+  margin-left: var(--sp-md);
+  padding-left: var(--sp-md);
+  border-left: 1px solid var(--clr-border);
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--clr-primary);
+  background: var(--clr-surface-high);
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:hover {
+  color: var(--clr-primary);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.text-btn {
+  background: transparent;
+  border: none;
+  color: var(--clr-text-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+}
+
+.text-btn:hover {
+  color: var(--clr-danger);
+  background: rgba(239, 68, 68, 0.1);
+}
+
 /* Buttons */
 .secondary-btn {
   background: var(--clr-surface-high);
@@ -162,6 +218,32 @@ body {
 .secondary-btn:hover {
   background: var(--clr-border-high);
   border-color: var(--clr-text-muted);
+}
+
+.primary-btn {
+  background: var(--clr-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 8px 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px var(--clr-primary-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.primary-btn:hover {
+  background: var(--clr-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px var(--clr-primary-glow);
+}
+
+.primary-btn:active {
+  transform: translateY(0);
 }
 
 .reset-btn {
@@ -724,6 +806,112 @@ body {
   color: var(--clr-danger);
   border-color: var(--clr-danger);
   background: rgba(239, 68, 68, 0.05);
+}
+
+/* History Panel */
+.history-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 2500;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.history-panel {
+  width: 400px;
+  height: 100%;
+  background: var(--clr-surface);
+  border-left: 1px solid var(--clr-border-high);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.history-header {
+  padding: var(--sp-lg);
+  border-bottom: 1px solid var(--clr-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-header h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--clr-text-main);
+}
+
+.history-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-md);
+}
+
+.history-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-sm);
+}
+
+.history-item {
+  background: var(--clr-surface-high);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: var(--sp-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-sm);
+  transition: all 0.2s;
+}
+
+.history-item:hover {
+  border-color: var(--clr-primary);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.item-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item-date {
+  font-size: 0.8rem;
+  color: var(--clr-text-muted);
+}
+
+.item-lang {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  background: var(--clr-border);
+  border-radius: var(--radius-sm);
+  color: var(--clr-text-main);
+}
+
+.empty-history {
+  text-align: center;
+  color: var(--clr-text-muted);
+  margin-top: var(--sp-xl);
+  font-style: italic;
 }
 
 .visually-hidden {

@@ -23,10 +23,15 @@ import {
 import { renderPointsPanel } from './pointsPanel';
 import { bindInlineRename } from './inlineRename';
 import { bindDragReorder } from './dragReorder';
+import { renderHistoryPanel } from './historyPanel';
 import { renderNameUnitControl } from './nameUnitControl';
-import { renderExportControls } from './exportModal';
+import { renderExportControls, openExportModal } from './exportModal';
+import { ExportLanguage } from './types';
 import { bindNavigationGuard } from './navigationGuard';
 import { showToast } from './toast';
+import { signInWithEmail, signOut, onAuthStateChange } from './auth';
+import { User } from '@supabase/supabase-js';
+import { saveExport, getHistory } from './historyService';
 
 // --- Accuracy check (only when URL contains ?test=1) ---
 function runAccuracyCheck(): void {
@@ -59,6 +64,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const tooltipEl = document.getElementById('coordinate-tooltip') as HTMLElement;
   const imageContainerEl = document.getElementById('image-container') as HTMLElement;
   const resetBtnEl = document.getElementById('reset-image-btn') as HTMLButtonElement;
+
+  // --- Auth DOM refs ---
+  const loginBtnEl = document.getElementById('login-btn') as HTMLButtonElement;
+  const logoutBtnEl = document.getElementById('logout-btn') as HTMLButtonElement;
+  const historyBtnEl = document.getElementById('history-btn') as HTMLButtonElement;
+  const userProfileEl = document.getElementById('user-profile') as HTMLElement;
+  const userAvatarEl = document.getElementById('user-avatar') as HTMLImageElement;
+
+  let currentUser: User | null = null;
 
   // --- Canvas ---
   const canvas = initCanvas(containerEl);
@@ -195,7 +209,23 @@ document.addEventListener('DOMContentLoaded', () => {
   );
 
   // --- Export controls ---
-  renderExportControls(exportControlsEl, () => state.points);
+  function handleExport(language: string, content: string): void {
+    if (currentUser) {
+      saveExport(
+        currentUser.id,
+        'Untiteld Image', // We don't have image name yet, maybe it should be state.imageName
+        language,
+        content,
+        state.points
+      ).then(() => {
+        showToast('Export saved to history');
+      }).catch(() => {
+        showToast('Failed to save export to history');
+      });
+    }
+  }
+
+  renderExportControls(exportControlsEl, () => state.points, handleExport);
 
   // --- Inline Rename (Bind once) ---
   bindInlineRename(panelEl, () => state, handleRename);
@@ -206,4 +236,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Initial render ---
   render();
+
+  // --- Initialize Auth ---
+  onAuthStateChange((user) => {
+    currentUser = user;
+    if (user) {
+      loginBtnEl.style.display = 'none';
+      userProfileEl.style.display = 'flex';
+      userAvatarEl.src = user.user_metadata.avatar_url || '';
+      userAvatarEl.title = user.user_metadata.full_name || user.email || '';
+      showToast(`Welcome, ${user.user_metadata.full_name || user.email}`);
+    } else {
+      loginBtnEl.style.display = 'block';
+      userProfileEl.style.display = 'none';
+      userAvatarEl.src = '';
+    }
+  });
+
+  loginBtnEl.addEventListener('click', () => {
+    const email = prompt('Enter your email for the magic login link:');
+    if (email) {
+      signInWithEmail(email)
+        .then(() => showToast('Check your email for the login link!'))
+        .catch((err: any) => showToast(`Error: ${err.message}`));
+    }
+  });
+  logoutBtnEl.addEventListener('click', () => {
+    signOut().then(() => showToast('Logged out'));
+  });
+
+  historyBtnEl.addEventListener('click', () => {
+    if (!currentUser) return;
+
+    getHistory(currentUser.id).then(history => {
+      const historyContainer = document.createElement('div');
+      historyContainer.id = 'history-container';
+      document.body.appendChild(historyContainer);
+
+      renderHistoryPanel(
+        historyContainer,
+        history,
+        () => historyContainer.remove(),
+        (item) => {
+          openExportModal(item.points_data, item.export_language as ExportLanguage);
+        }
+      );
+    });
+  });
 });

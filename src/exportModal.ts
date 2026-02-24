@@ -4,6 +4,8 @@ import { formatPoints, downloadFile } from './exportEngine';
 // Module-level selected language
 let currentLanguage: ExportLanguage = 'json';
 
+export type ExportCallback = (language: ExportLanguage, content: string) => void;
+
 const LANGUAGE_LABELS: Record<ExportLanguage, string> = {
   json: 'JSON',
   dart: 'Dart',
@@ -18,7 +20,8 @@ const LANGUAGE_LABELS: Record<ExportLanguage, string> = {
 
 export function renderExportControls(
   controlsEl: HTMLElement,
-  getPoints: () => ReadonlyArray<AnchorPoint>
+  getPoints: () => ReadonlyArray<AnchorPoint>,
+  onExport?: ExportCallback
 ): void {
   controlsEl.innerHTML = '';
 
@@ -49,9 +52,15 @@ export function renderExportControls(
   // Export button
   const exportBtn = document.createElement('button');
   exportBtn.id = 'export-btn';
+  exportBtn.className = 'primary-btn';
   exportBtn.textContent = 'Export Data';
   exportBtn.addEventListener('click', () => {
-    openExportModal(getPoints(), currentLanguage);
+    const points = getPoints();
+    openExportModal(points, currentLanguage);
+    if (onExport) {
+      const formattedCode = formatPoints(points, currentLanguage);
+      onExport(currentLanguage, formattedCode);
+    }
   });
 
   controlsEl.appendChild(exportBtn);
