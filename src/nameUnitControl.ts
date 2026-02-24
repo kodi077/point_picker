@@ -29,10 +29,9 @@ export function renderNameUnitControl(
   input.placeholder = 'e.g. Point';
   containerEl.appendChild(input);
 
-  // 'change' event — trim and commit
+  // 'change' event — commit as-is (allow trailing spaces)
   input.addEventListener('change', () => {
-    const trimmedValue = input.value.trim();
-    onChange(trimmedValue);
+    onChange(input.value);
   });
 
   // 'input' event — live update without trimming

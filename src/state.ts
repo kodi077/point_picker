@@ -33,19 +33,14 @@ export function isNameDuplicate(state: AppState, name: string, excludeId?: strin
 }
 
 export function isAutoNamed(point: AnchorPoint, index: number, nameUnit: string): boolean {
-  if (nameUnit.trim() === '') {
-    return point.pointName === (index + 1).toString();
-  }
-  return point.pointName === (index + 1).toString() + nameUnit;
+  return point.pointName === nameUnit + (index + 1).toString();
 }
 
 // --- Points ---
 
 export function addPoint(state: AppState, xAnchor: number, yAnchor: number): AppState {
   const nameUnit = state.nameUnit;
-  const autoName = nameUnit.trim() === ''
-    ? (state.points.length + 1).toString()
-    : (state.points.length + 1).toString() + nameUnit;
+  const autoName = nameUnit + (state.points.length + 1).toString();
 
   const newPoint: AnchorPoint = {
     id: crypto.randomUUID(),
@@ -77,9 +72,7 @@ export function deletePoint(state: AppState, id: string): AppState {
     // Find original index to check if it was auto-named
     const originalIndex = originalPoints.findIndex((op) => op.id === p.id);
     if (isAutoNamed(p, originalIndex, state.nameUnit)) {
-      const newName = state.nameUnit.trim() === ''
-        ? (newIndex + 1).toString()
-        : (newIndex + 1).toString() + state.nameUnit;
+      const newName = state.nameUnit + (newIndex + 1).toString();
       return { ...p, pointName: newName };
     }
     return p;
@@ -103,9 +96,7 @@ export function reorderPoints(state: AppState, fromIndex: number, toIndex: numbe
   const recalculated = points.map((p, newIndex) => {
     const originalIndex = originalPoints.findIndex((op) => op.id === p.id);
     if (isAutoNamed(p, originalIndex, state.nameUnit)) {
-      const newName = state.nameUnit.trim() === ''
-        ? (newIndex + 1).toString()
-        : (newIndex + 1).toString() + state.nameUnit;
+      const newName = state.nameUnit + (newIndex + 1).toString();
       return { ...p, pointName: newName };
     }
     return p;
